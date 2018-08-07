@@ -1,222 +1,224 @@
-jQuery(document).ready(function($) {
-	'use strict';
+jQuery(document).ready(function ($) {
+  'use strict'
 
-	/**
-	 * set up the buttons on the entire form
-	 */
-	function acfRepeaterCollapserInit() {
-		// HTML to put above each repeater instance
-		var i = 1,
-			$collapseAllButton = '<button type="button" role="button" class="button field-repeater-toggle field-repeater-toggle-all">' + acfrcL10n.collapseRows + '</button>',
-			$collapseSingleButtonTable = '<td class="repeater-button-cell"><div class="repeater-button-cell-div"><button type="button" role="button" class="button field-repeater-toggle field-repeater-toggle-single"><span class="screen-reader-text">' + acfrcL10n.collapseRow + '</span></button></div></td>',
-			$collapseSingleButton = '<button type="button" role="button" class="button field-repeater-toggle field-repeater-toggle-single"><span class="screen-reader-text">' + acfrcL10n.collapseRow + '</span></button>';
+  /**
+   * set up the buttons on the entire form
+   */
+  function acfRepeaterCollapserInit () {
+    // HTML to put above each repeater instance
+    var i = 1
+    var $collapseAllButton = '<button type="button" role="button" class="button field-repeater-toggle field-repeater-toggle-all">' + acfrcL10n.collapseRows + '</button>'
+    var $collapseSingleButtonTable = '<td class="repeater-button-cell"><div class="repeater-button-cell-div"><button type="button" role="button" class="button field-repeater-toggle field-repeater-toggle-single"><span class="screen-reader-text">' + acfrcL10n.collapseRow + '</span></button></div></td>'
+    var $collapseSingleButton = '<button type="button" role="button" class="button field-repeater-toggle field-repeater-toggle-single"><span class="screen-reader-text">' + acfrcL10n.collapseRow + '</span></button>'
 
-		// find each repeater & flexible instance, add the button if the field uses the row layout
-		$('.field_type-repeater, .field_type-flexible_content').each( function() {
-			var	$repeater = $(this);
+    // find each repeater & flexible instance, add the button if the field uses the row layout
+    $('.field_type-repeater, .field_type-flexible_content').each(function () {
+      var	$repeater = $(this)
 
-			// only use this on row layout
-			if( $( '.acf-input-table', $repeater ).hasClass('row_layout') ) {
-				$repeater.data('acf-rowset-collapsed', false).attr('aria-expanded', false);
+      // only use this on row layout
+      if ($('.acf-input-table', $repeater).hasClass('row_layout')) {
+        $repeater.data('acf-rowset-collapsed', false).attr('aria-expanded', false)
 
-				// first: nested, second: parent
-				if( $repeater.is( 'tr' ) ) {
-					$repeater.children( 'td:last-child' )
-						.children( '.inner' )
-						.prepend( $collapseAllButton )
-						.data('acf-rowset-collapsed', false)
-						.data('acf-repeater-nested', true);
-					$('.row,.row-clone', $repeater ).data('acf-repeater-nested', true);
-				} else {
-					$repeater.prepend( $collapseAllButton ).data('acf-rowset-collapsed', false);
-				}
-			}
-		});
+        // first: nested, second: parent
+        if ($repeater.is('tr')) {
+          $repeater.children('td:last-child')
+            .children('.inner')
+            .prepend($collapseAllButton)
+            .data('acf-rowset-collapsed', false)
+            .data('acf-repeater-nested', true)
+          $('.row,.row-clone', $repeater).data('acf-repeater-nested', true)
+        } else {
+          $repeater.prepend($collapseAllButton).data('acf-rowset-collapsed', false)
+        }
+      }
+    })
 
-		// append single repeater collapse to each row of repeater field
-		$('.field_type-repeater .row_layout .row,.field_type-repeater .row_layout .row-clone').each( function() {
-			var id = 'acf-repeater-' + i,
-				$that = $(this);
+    // append single repeater collapse to each row of repeater field
+    $('.field_type-repeater .row_layout .row,.field_type-repeater .row_layout .row-clone').each(function () {
+      var $that = $(this)
+      var id = 'acf-repeater-' + i
 
-			$that.prepend( $collapseSingleButtonTable )
-				.data('acf-row-collapsed', false).attr('aria-expanded', true)
-				.attr('id','acf-repeater-' + i)
-				.attr('aria-live','off');
-			$('.field-repeater-toggle-single', $that.first().attr('aria-controls',id ) );
+      $that.prepend($collapseSingleButtonTable)
+        .data('acf-row-collapsed', false).attr('aria-expanded', true)
+        .attr('id', 'acf-repeater-' + i)
+        .attr('aria-live', 'off')
+      $('.field-repeater-toggle-single', $that.first().attr('aria-controls', id))
 
-			i++;
-		});
+      i++
+    })
 
-		// append single repeater collapse to flex fields
-		$('.field_type-flexible_content .layout').each( function() {
-			var $that = $(this),
-				id    = 'acf-repeater-' + i;
-			if( $('.acf-input-table', $that).hasClass('row_layout') ) {
-				i++;
+    // append single repeater collapse to flex fields
+    $('.field_type-flexible_content .layout').each(function () {
+      var $that = $(this)
+      var id = 'acf-repeater-' + i
 
-				$that.prepend( $collapseSingleButton )
-					.data('acf-row-collapsed', false)
-					.attr('aria-expanded', true)
-					.attr('id','acf-repeater-' + i)
-					.attr('aria-live','off');
+      if ($('.acf-input-table', $that).hasClass('row_layout')) {
+        i++
 
-				$('.field-repeater-toggle-single', $that).first().attr('aria-controls',id);
-			}
-		});
+        $that.prepend($collapseSingleButton)
+          .data('acf-row-collapsed', false)
+          .attr('aria-expanded', true)
+          .attr('id', 'acf-repeater-' + i)
+          .attr('aria-live', 'off')
 
-		// Bind click events to the toggle functions
-		// delegated to higher DOM element to handle dynamically added repeaters
-		$( '.field_type-repeater, .field_type-flexible_content' ).on(
-			'click',
-			'.field-repeater-toggle-all',
-			acfRepeaterToggleAll
-		);
-		$( '.field_type-repeater .row_layout,.field_type-flexible_content' ).on(
-			'click',
-			'.field-repeater-toggle-single',
-			acfRepeaterToggleSingle
-		);
+        $('.field-repeater-toggle-single', $that).first().attr('aria-controls', id)
+      }
+    })
 
-		// prevent default flexible field collapsing for clarity
-		$('.field_type-flexible_content').on(
-			'click',
-			'.acf-fc-layout-handle',
-			false
-		);
-	}
+    // Bind click events to the toggle functions
+    // delegated to higher DOM element to handle dynamically added repeaters
+    $('.field_type-repeater, .field_type-flexible_content').on(
+      'click',
+      '.field-repeater-toggle-all',
+      acfRepeaterToggleAll
+    )
+    $('.field_type-repeater .row_layout,.field_type-flexible_content').on(
+      'click',
+      '.field-repeater-toggle-single',
+      acfRepeaterToggleSingle
+    )
 
-	/**
-	 * Collapse a row or rows
-	 */
-	function acfRepeaterCollapseRow( $rows ) {
-		var $rowButtonText = $('.screen-reader-text', $rows);
-		$rows.addClass('collapsed-row')
-			.data('acf-row-collapsed', true)
-			.attr('aria-expanded', false);
-		$rowButtonText.text(acfrcL10n.expandRow);
-	}
+    // prevent default flexible field collapsing for clarity
+    $('.field_type-flexible_content').on(
+      'click',
+      '.acf-fc-layout-handle',
+      false
+    )
+  }
 
-	/**
-	 * Expand a row or rows
-	 */
-	function acfRepeaterExpandRow( $rows ) {
-		var $rowButtonText = $('.screen-reader-text', $rows);
-		$rows.removeClass('collapsed-row')
-			.data('acf-row-collapsed', false)
-			.attr('aria-expanded', true);
-		$rowButtonText.text(acfrcL10n.collapseRow);
-	}
+  /**
+   * Collapse a row or rows
+   */
+  function acfRepeaterCollapseRow ($rows) {
+    var $rowButtonText = $('.screen-reader-text', $rows)
+    $rows.addClass('collapsed-row')
+      .data('acf-row-collapsed', true)
+      .attr('aria-expanded', false)
+    $rowButtonText.text(acfrcL10n.expandRow)
+  }
 
-	/**
-	 * Indicate a collapsed rowset
-	 */
-	function acfRepeaterExpandRowset( $wrapper ) {
-		var $button = $('.field-repeater-toggle-all', $wrapper).first();
+  /**
+   * Expand a row or rows
+   */
+  function acfRepeaterExpandRow ($rows) {
+    var $rowButtonText = $('.screen-reader-text', $rows)
+    $rows.removeClass('collapsed-row')
+      .data('acf-row-collapsed', false)
+      .attr('aria-expanded', true)
+    $rowButtonText.text(acfrcL10n.collapseRow)
+  }
 
-		$wrapper.removeClass('collapsed-repeater').data('acf-rowset-collapsed', false);
-		$button.text(acfrcL10n.collapseRows);
-	}
+  /**
+   * Indicate a collapsed rowset
+   */
+  function acfRepeaterExpandRowset ($wrapper) {
+    var $button = $('.field-repeater-toggle-all', $wrapper).first()
 
-	/**
-	 * Indicate an expanded rowset
-	 */
-	function acfRepeaterCollapseRowset( $wrapper ) {
-		var $button = $('.field-repeater-toggle-all', $wrapper).first();
+    $wrapper.removeClass('collapsed-repeater').data('acf-rowset-collapsed', false)
+    $button.text(acfrcL10n.collapseRows)
+  }
 
-		$wrapper.addClass('collapsed-repeater')
-			.data('acf-rowset-collapsed', true);
-		$button.text(acfrcL10n.expandRows);
-	}
+  /**
+   * Indicate an expanded rowset
+   */
+  function acfRepeaterCollapseRowset ($wrapper) {
+    var $button = $('.field-repeater-toggle-all', $wrapper).first()
 
-	/**
-	 * toggles set of repeater rows or flexible fields
-	 */
-	function acfRepeaterToggleAll( event ) {
-		var $rows,
-			$that          = $(this),
-			$rowsetButton  = $that,
-			$rowsetWrapper = $that.parent();
+    $wrapper.addClass('collapsed-repeater')
+      .data('acf-rowset-collapsed', true)
+    $button.text(acfrcL10n.expandRows)
+  }
 
-		// select either nested or unnested repeater rows, not both
-		if( true === $rowsetWrapper.data('acf-repeater-nested') ) {
-			$rows = $('.row:data(acf-repeater-nested),.layout', $rowsetWrapper);
-		} else {
-			$rows = $('.row,.layout', $rowsetWrapper).not(':data(acf-repeater-nested)');
-		}
+  /**
+   * toggles set of repeater rows or flexible fields
+   */
+  function acfRepeaterToggleAll (event) {
+    var $rows
+    var $that = $(this)
+    var $rowsetButton = $that
+    var $rowsetWrapper = $that.parent()
 
-		// toggle repeater state and all rows
-		if( true !== $rowsetWrapper.data('acf-rowset-collapsed') ) {
-			acfRepeaterCollapseRowset( $rowsetWrapper );
-			acfRepeaterCollapseRow( $rows );
-		} else {
-			acfRepeaterExpandRowset( $rowsetWrapper );
-			acfRepeaterExpandRow( $rows );
-		}
+    // select either nested or unnested repeater rows, not both
+    if ($rowsetWrapper.data('acf-repeater-nested') === true) {
+      $rows = $('.row:data(acf-repeater-nested),.layout', $rowsetWrapper)
+    } else {
+      $rows = $('.row,.layout', $rowsetWrapper).not(':data(acf-repeater-nested)')
+    }
 
-		// prevent bubbling up to parent repeater rowset
-		event.stopPropagation();
-	}
+    // toggle repeater state and all rows
+    if ($rowsetWrapper.data('acf-rowset-collapsed') !== true) {
+      acfRepeaterCollapseRowset($rowsetWrapper)
+      acfRepeaterCollapseRow($rows)
+    } else {
+      acfRepeaterExpandRowset($rowsetWrapper)
+      acfRepeaterExpandRow($rows)
+    }
 
-	/**
-	 * toggles single repeater row or flexible field
-	 */
-	function acfRepeaterToggleSingle( event ) {
-		var $rowButton = $(this),
-			$rowButtonText = $('.screen-reader-text', $rowButton),
-			$row = $rowButton.closest('.row,.layout'),
-			$rowsetWrapper;
+    // prevent bubbling up to parent repeater rowset
+    event.stopPropagation()
+  }
 
-		// select either parent repeater field wrapper
-		if( true === $row.data('acf-repeater-nested') ) {
-			$rowsetWrapper = $row.closest( '.inner' );
-		} else {
-			$rowsetWrapper = $row.closest('.field_type-repeater,.field_type-flexible_content');
-		}
+  /**
+   * toggles single repeater row or flexible field
+   */
+  function acfRepeaterToggleSingle (event) {
+    var $rowButton = $(this)
+    var $rowButtonText = $('.screen-reader-text', $rowButton)
+    var $row = $rowButton.closest('.row,.layout')
+    var $rowsetWrapper
 
-		// toggle the row state and button text
-		if( true !== $row.data('acf-row-collapsed') ) {
-			acfRepeaterCollapseRow( $row );
-		} else {
-			acfRepeaterExpandRow( $row );
-		}
+    // select either parent repeater field wrapper
+    if ($row.data('acf-repeater-nested') === true) {
+      $rowsetWrapper = $row.closest('.inner')
+    } else {
+      $rowsetWrapper = $row.closest('.field_type-repeater,.field_type-flexible_content')
+    }
 
-		if( true === acfRepeaterAllCollapsed( $rowsetWrapper ) ) {
-			acfRepeaterCollapseRowset( $rowsetWrapper );
-		} else {
-			acfRepeaterExpandRowset( $rowsetWrapper );
-		}
+    // toggle the row state and button text
+    if ($row.data('acf-row-collapsed') !== true) {
+      acfRepeaterCollapseRow($row)
+    } else {
+      acfRepeaterExpandRow($row)
+    }
 
-		// prevent bubbling up to parent row button
-		event.stopPropagation();
-	}
+    if (acfRepeaterAllCollapsed($rowsetWrapper) === true) {
+      acfRepeaterCollapseRowset($rowsetWrapper)
+    } else {
+      acfRepeaterExpandRowset($rowsetWrapper)
+    }
 
-	/**
-	 * check to see if all rows in a rowset are collapsed
-	 * @param  obj $rowsetWrapper jquery object
-	 * @return bool                	true if all rows in rowset are collapsed
-	 */
-	function acfRepeaterAllCollapsed( $rowsetWrapper ) {
-		var $rows,
-			rowStates = [],
-			allCollapsed;
-		// select either nested or unnested repeater rows, not both
-		if( true === $rowsetWrapper.data('acf-repeater-nested') ) {
-			$rows = $('.row:data(acf-repeater-nested),.layout:data(acf-repeater-nested)', $rowsetWrapper);
-		} else {
-			$rows = $('.row,.values .layout', $rowsetWrapper).not(':data(acf-repeater-nested)');
-		}
+    // prevent bubbling up to parent row button
+    event.stopPropagation()
+  }
 
-		// store every row collapsed state in an array
-		$rows.each( function() {
-			rowStates.push( $(this).data('acf-row-collapsed') );
-		});
+  /**
+   * check to see if all rows in a rowset are collapsed
+   * @param  obj $rowsetWrapper jquery object
+   * @return bool true if all rows in rowset are collapsed
+   */
+  function acfRepeaterAllCollapsed ($rowsetWrapper) {
+    var $rows
+    var rowStates = []
+    var allCollapsed
 
-		// check if any rows are expanded
-		allCollapsed = 0 > $.inArray( false, rowStates );
+    // select either nested or unnested repeater rows, not both
+    if ($rowsetWrapper.data('acf-repeater-nested') === true) {
+      $rows = $('.row:data(acf-repeater-nested),.layout:data(acf-repeater-nested)', $rowsetWrapper)
+    } else {
+      $rows = $('.row,.values .layout', $rowsetWrapper).not(':data(acf-repeater-nested)')
+    }
 
-		return allCollapsed;
-	}
+    // store every row collapsed state in an array
+    $rows.each(function () {
+      rowStates.push($(this).data('acf-row-collapsed'))
+    })
 
-	// Initiatilize the plugin
-	acfRepeaterCollapserInit();
-});
+    // check if any rows are expanded
+    allCollapsed = $.inArray(false, rowStates) < 0
+
+    return allCollapsed
+  }
+
+  // Initiatilize the plugin
+  acfRepeaterCollapserInit()
+})
