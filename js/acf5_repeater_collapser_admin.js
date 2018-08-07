@@ -46,7 +46,9 @@
     $('.acf-row').removeClass('-collapsed')
 
     // Append the collapse button
-    $('.acf-field-repeater > .acf-label').append('<button class="collapse">' + acfrcL10n.collapseAll + '</button>')
+    $('.acf-field-repeater > .acf-label')
+      .append('<button class="button collapse">' + acfrcL10n.collapseAll + '</button>')
+      .addClass('collapse-parent')
 
     // Check if we should show the button
     $('.acf-field-repeater').each(function (index) {

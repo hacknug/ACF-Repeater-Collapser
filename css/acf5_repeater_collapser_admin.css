@@ -1,54 +1,33 @@
 .collapse {
-  box-sizing: border-box;
-  position: absolute;
-  top: 15px;
-  right: 12px;
-  border: 1px solid #d1d1d1;
-  background: #fff;
-  font-weight: normal;
-  color: #6a6f74;
-  padding: 1px 10px 1px 30px;
-  text-align: right;
-  min-width: 114px;
-  transition: all 100ms ease-in-out;
-  background-color: rgba(249, 249, 249, 0.5);
-  user-select: none;
-}
-
-.collapse:hover {
-  border: 1px solid #6a6f74;
-  background-color: #fff;
-  cursor: pointer;
-}
-
-.collapse:focus {
-  background-color: #fff;
-  box-shadow: none;
-  outline: none;
+  display: inline-flex !important;
+  align-items: center;
+  padding-left: 5px !important;
+  padding-right: 7px !important;
+  transition-property: border, color;
+  transition-duration: .05s;
+  transition-timing-function: ease-in-out;
 }
 
 .collapse::before {
-  position: absolute;
-  top: 0;
-  left: 3px;
-  content: "";
-  background: url(../images/icon--collapse.svg);
-  background-size: 10px;
-  width: 20px;
-  height: 20px;
+  content: '';
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  margin-right: 4px;
+  margin-left: 2px;
+  background-image: url(../images/icon--collapse.svg);
+  background-size: 1em;
   background-repeat: no-repeat;
-  background-position: center center;
+  background-position: center;
 }
 
-.collapse--active {}
+.collapse.collapse--active::before {
+  background-image: url(../images/icon--expand.svg);
+}
 
-.collapse--active::before {
-  background: url(../images/icon--expand.svg);
-  background-size: 10px;
-  width: 20px;
-  height: 20px;
-  background-repeat: no-repeat;
-  background-position: center center;
+.collapse-parent {
+  display: flex;
+  justify-content: space-between;
 }
 
 .flexi-label {
